@@ -1,0 +1,18 @@
+{
+  "name": "cat-album",
+  "version": "1.0.0",
+  "description": "Cat Album",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "cloudedpanther",
+  "license": "ISC",
+  "devDependencies": {
+    "msw": "^2.0.0"
+  },
+  "msw": {
+    "workerDirectory": "./public"
+  },
+  "dependencies": {}
+}
