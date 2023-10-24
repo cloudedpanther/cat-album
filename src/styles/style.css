@@ -58,7 +58,9 @@ body {
 }
 
 .Breadcrumb > div::after {
-  content: ' -';
+  content: '-';
+  display: inline-block;
+  margin-left: 8px;
 }
 
 .Breadcrumb > div:last-child::after {
