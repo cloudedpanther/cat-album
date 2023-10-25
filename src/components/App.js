@@ -7,7 +7,6 @@ class App {
   nodeMap = {};
   nextNodeListMap = {};
   path = [];
-  nextNodes = [];
 
   constructor($target) {
     this.$target = $target;
@@ -16,21 +15,44 @@ class App {
   }
 
   async init() {
-    await this.updateNextNodes('root');
+    const rootNode = { id: 'root', name: 'root', parent: null };
 
-    const rootNode = { id: 'root', name: 'root' };
+    this.nodeMap['root'] = rootNode;
+
+    await this.updateNextNodes('root');
 
     this.path.push(rootNode);
 
-    this.render();
+    this.render('root');
   }
 
-  render() {
+  render(nodeId) {
     this.$target.innerHTML = '';
 
-    new Breadcrumb({ $target: this.$target, path: this.path });
+    new Breadcrumb({
+      $target: this.$target,
+      path: this.path,
+      onClick: this.updateState.bind(this),
+    });
 
-    new Nodes({ $target: this.$target, nodes: this.nextNodes });
+    const prevNodeId = this.nodeMap[nodeId].parent?.id;
+    const prevNode = prevNodeId
+      ? { ...this.nodeMap[prevNodeId], name: '', type: 'PREV' }
+      : null;
+
+    new Nodes({
+      $target: this.$target,
+      prevNode,
+      nodes: this.nextNodeListMap[nodeId],
+      onClick: this.updateState.bind(this),
+    });
+  }
+
+  async updateState(nodeId) {
+    await this.updateNextNodes(nodeId);
+    this.updatePath(nodeId);
+
+    this.render(nodeId);
   }
 
   async updateNextNodes(nodeId) {
@@ -38,11 +60,12 @@ class App {
       this.nextNodeListMap[nodeId] = await fetchNextNodes(nodeId);
 
       this.nextNodeListMap[nodeId].forEach((node) => {
-        if (!this.nodeMap[node.id]) this.nodeMap[node.id] = node;
+        if (!this.nodeMap[node.id])
+          this.nodeMap[node.id] = node.parent
+            ? node
+            : { ...node, parent: { id: 'root' } };
       });
     }
-
-    this.nextNodes = this.nextNodeListMap[nodeId];
   }
 
   updatePath(nodeId) {
@@ -54,13 +77,6 @@ class App {
     }
 
     this.path.push(this.nodeMap[nodeId]);
-  }
-
-  async updateState(nodeId) {
-    await this.updateNextNodes(nodeId);
-    this.updatePath(nodeId);
-
-    this.render();
   }
 }
 

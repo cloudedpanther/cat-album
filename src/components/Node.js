@@ -1,7 +1,8 @@
 class Node {
-  constructor({ $target, node }) {
+  constructor({ $target, node, onClick }) {
     const $node = document.createElement('div');
     $node.className = 'Node';
+    $node.onclick = () => onClick(node.id);
     $target.appendChild($node);
 
     let imgSrc = '';
