@@ -1,9 +1,12 @@
 import { fetchNextNodes } from '../api.js';
 import Breadcrumb from './Breadcrumb.js';
+import Loading from './Loading.js';
 import Nodes from './Nodes.js';
 
 class App {
   $target = null;
+  $loading = null;
+
   nodeMap = {};
   nextNodeListMap = {};
   path = [];
@@ -15,6 +18,8 @@ class App {
   }
 
   async init() {
+    this.$loading = new Loading({ $target: this.$target.parentNode });
+
     const rootNode = { id: 'root', name: 'root', parent: null };
 
     this.nodeMap['root'] = rootNode;
@@ -24,6 +29,8 @@ class App {
     this.path.push(rootNode);
 
     this.render('root');
+
+    this.$loading.finish();
   }
 
   render(nodeId) {
@@ -49,10 +56,14 @@ class App {
   }
 
   async updateState(nodeId) {
+    this.$loading.start();
+
     await this.updateNextNodes(nodeId);
     this.updatePath(nodeId);
 
     this.render(nodeId);
+
+    this.$loading.finish();
   }
 
   async updateNextNodes(nodeId) {
