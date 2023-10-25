@@ -1,8 +1,27 @@
+import ImageViewer from './ImageViewer.js';
+
 class Node {
-  constructor({ $target, node, onClick }) {
+  $imageViewer = null;
+
+  constructor({ $target, $app, node, onClick }) {
     const $node = document.createElement('div');
     $node.className = 'Node';
-    $node.onclick = () => onClick(node.id);
+    $node.onclick = () => {
+      if (node.type === 'FILE') {
+        if (!this.$imageViewer) {
+          this.$imageViewer = new ImageViewer({
+            $target: $app,
+            imgSrc: node.filePath,
+          });
+          return;
+        }
+
+        this.$imageViewer.open();
+        return;
+      }
+
+      onClick(node.id);
+    };
     $target.appendChild($node);
 
     let imgSrc = '';

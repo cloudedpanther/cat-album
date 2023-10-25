@@ -7,7 +7,7 @@ class Nodes {
     $target.appendChild($nodes);
 
     (prevNode ? [prevNode, ...nodes] : nodes).map(
-      (node) => new Node({ $target: $nodes, node, onClick }),
+      (node) => new Node({ $target: $nodes, $app: $target, node, onClick }),
     );
   }
 }
